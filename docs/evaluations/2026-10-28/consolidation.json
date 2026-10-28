@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-28",
+  "status": "local conformance and native software checks",
+  "capability": "transfer",
+  "primary_source_commit": "49889d5cd0bcd0c50f670be960051dacb1c8975d",
+  "sources": [
+    {
+      "repo": "amplifier-bundle-genetransfer",
+      "commit": "49889d5cd0bcd0c50f670be960051dacb1c8975d",
+      "paths": [
+        "PRINCIPLES.md",
+        "context/hgt-runbook.md"
+      ],
+      "license": "MIT License",
+      "role": "Primary history and engine retained; methods consolidated behind the canonical portable entry."
+    }
+  ],
+  "checks": [
+    {
+      "name": "Ledger ratchet detector",
+      "command": "python3 evals/hillclimb.py --self-test; python3 evals/hillclimb.py --fixture",
+      "status": "passed",
+      "evidence": "Builder/verifier state regressions rejected and synthetic fixture curve read. No new donor-host transfer or user benefit claimed.",
+      "expected": "The stated scope passes; no broader result inferred."
+    },
+    {
+      "name": "Executable graph syntax",
+      "command": "dot -Tsvg pipelines/hgt.dot -o /dev/null; dot -Tsvg pipelines/verify.dot -o /dev/null",
+      "status": "passed",
+      "evidence": "Both retained graphs parse. No graph/orchestration changes or paid pipeline execution.",
+      "expected": "The stated scope passes; no broader result inferred."
+    },
+    {
+      "name": "Portable packaging and install",
+      "command": "python3 scripts/capability.py build; python3 scripts/capability.py check; python3 scripts/capability.py doctor; python3 scripts/capability.py install --dest <temporary-parent> (twice)",
+      "status": "passed",
+      "expected": "Byte-identical canonical ZIP and isolated idempotent install.",
+      "evidence": "All operations passed. No runtime activation or effectiveness measured."
+    },
+    {
+      "name": "Skill discovery metadata",
+      "command": "<yaml-enabled-python> /path/to/skill-creator/scripts/quick_validate.py skills/transfer",
+      "status": "passed",
+      "expected": "Valid required frontmatter, naming, and complete scaffold.",
+      "evidence": "Skill is valid. This is a structural check, not a behavioral benchmark."
+    }
+  ],
+  "limitations": [
+    "No new paid live inference, production activation, publication, or outside-user acceptance.",
+    "Fictional examples are authored illustrations, not observed outcomes.",
+    "Retained historical evaluation assets keep their original scope; renamed portable-method effectiveness is unmeasured."
+  ],
+  "changes": "Gap-check, native re-expression and donor-derived verification; engine preserved."
+}

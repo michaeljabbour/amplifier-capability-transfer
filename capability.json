@@ -1,0 +1,100 @@
+{
+  "id": "transfer",
+  "display_name": "Transfer",
+  "kind": "skill",
+  "promise": "Bring a proven capability to the host you use.",
+  "audience": "Developers bringing an observed donor capability into one or more existing hosts.",
+  "trigger": "Use for a bounded capability transfer across architectures or languages, while keeping host boundaries intact.",
+  "skill_path": "skills/transfer",
+  "modes": [
+    {
+      "name": "Gap check",
+      "when": "A donor seems useful but host overlap is unclear.",
+      "output": "Observed donor contract and an explicit keep/drop rationale per host."
+    },
+    {
+      "name": "Re-express",
+      "when": "A missing capability and host seam are known.",
+      "output": "A native host slice with tests, real-surface probe, and CI parity."
+    },
+    {
+      "name": "Verify",
+      "when": "The builder reports a transfer complete.",
+      "output": "A donor-derived check, bounded reopen, and retained evidence or blocker."
+    }
+  ],
+  "examples": [
+    {
+      "title": "A client feature with a server prerequisite",
+      "brief": "A fictional donor lets users pause a job; two target clients lack it and their shared runtime has no pause operation.",
+      "before": "Copy donor code into both clients and mark two features complete.",
+      "after": "Describe pause/resume behavior, add the runtime protocol first, then implement each client in its own seam and test actual state transitions.",
+      "why": "The capability crosses hosts through an explicit contract; client UI cannot manufacture backend behavior.",
+      "fictional": true
+    }
+  ],
+  "boundaries": [
+    "The donor is read-only; transfer observable behavior by re-expression, not source grafting.",
+    "Existing host conventions and authority boundaries win over donor implementation choices.",
+    "Optional HGT graphs, ledgers, Forge, and Amplifier are execution aids; declared fitness is not benefit evidence."
+  ],
+  "install_commands": [
+    "python3 scripts/capability.py doctor",
+    "python3 scripts/capability.py install --dest ~/.agents/skills"
+  ],
+  "runtime_install_commands": [
+    "amplifier bundle add ./bundle.md"
+  ],
+  "verification": [
+    {
+      "name": "Ledger ratchet detector",
+      "command": "python3 evals/hillclimb.py --self-test; python3 evals/hillclimb.py --fixture",
+      "status": "passed",
+      "evidence": "Builder/verifier state regressions rejected and synthetic fixture curve read. No new donor-host transfer or user benefit claimed.",
+      "expected": "The stated scope passes; no broader result inferred."
+    },
+    {
+      "name": "Executable graph syntax",
+      "command": "dot -Tsvg pipelines/hgt.dot -o /dev/null; dot -Tsvg pipelines/verify.dot -o /dev/null",
+      "status": "passed",
+      "evidence": "Both retained graphs parse. No graph/orchestration changes or paid pipeline execution.",
+      "expected": "The stated scope passes; no broader result inferred."
+    },
+    {
+      "name": "Portable packaging and install",
+      "command": "python3 scripts/capability.py build; python3 scripts/capability.py check; python3 scripts/capability.py doctor; python3 scripts/capability.py install --dest <temporary-parent> (twice)",
+      "status": "passed",
+      "expected": "Byte-identical canonical ZIP and isolated idempotent install.",
+      "evidence": "All operations passed. No runtime activation or effectiveness measured."
+    },
+    {
+      "name": "Skill discovery metadata",
+      "command": "<yaml-enabled-python> /path/to/skill-creator/scripts/quick_validate.py skills/transfer",
+      "status": "passed",
+      "expected": "Valid required frontmatter, naming, and complete scaffold.",
+      "evidence": "Skill is valid. This is a structural check, not a behavioral benchmark."
+    }
+  ],
+  "sources": [
+    {
+      "repo": "amplifier-bundle-genetransfer",
+      "commit": "49889d5cd0bcd0c50f670be960051dacb1c8975d",
+      "paths": [
+        "PRINCIPLES.md",
+        "context/hgt-runbook.md"
+      ],
+      "license": "MIT License",
+      "role": "Primary history and engine retained; methods consolidated behind the canonical portable entry."
+    }
+  ],
+  "consolidation": [],
+  "docs": [
+    "docs/INSTALL.md",
+    "docs/MIGRATION.md",
+    "docs/VALIDATION.md",
+    "docs/NATIVE-README.md",
+    "docs/evaluations/2026-10-28/consolidation.json"
+  ],
+  "evidence_summary": "This local candidate preserves the original source and evaluation assets. Packaging and native software checks are recorded separately from comparative usefulness. No outside-user outcome or renamed-method effectiveness claim is established.",
+  "publication_status": "Local release candidate. Source repositories and public URLs have not been changed."
+}

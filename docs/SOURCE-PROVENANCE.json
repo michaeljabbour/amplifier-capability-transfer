@@ -1,0 +1,12 @@
+[
+  {
+    "repo": "amplifier-bundle-genetransfer",
+    "commit": "49889d5cd0bcd0c50f670be960051dacb1c8975d",
+    "paths": [
+      "PRINCIPLES.md",
+      "context/hgt-runbook.md"
+    ],
+    "license": "MIT License",
+    "role": "Primary history and engine retained; methods consolidated behind the canonical portable entry."
+  }
+]
