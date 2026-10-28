@@ -1,33 +1,69 @@
 # Transfer
 
-Bring a proven capability to the host you use.
+Bring the behavior to the app you use.
 
-Developers bringing an observed donor capability into one or more existing hosts. Use for a bounded capability transfer across architectures or languages, while keeping host boundaries intact.
+A skill for moving a bounded capability between applications. Understand the donor, check what the host already does and rebuild the missing behavior through the host’s own architecture.
 
-## Install the portable method
+[Explore the site](https://michaeljabbour.github.io/amplifier-skill-transfer/) · [Read the method](skills/transfer/SKILL.md) · [Install guide](docs/INSTALL.md)
+
+## What you get
+
+- **Transfer the useful part.** Describe the behavior and failure paths, then drop features the host already has or does not need.
+- **Keep the host coherent.** Re-express the capability through native interfaces instead of grafting donor source into a different system.
+- **Verify against the donor.** Use donor-derived acceptance checks and actual host surfaces to challenge the builder’s completion claim.
+
+## Install and try it
+
+Requires Git and Python 3.11+. Run these commands from a terminal:
 
 ```sh
+git clone https://github.com/michaeljabbour/amplifier-skill-transfer.git
+cd amplifier-skill-transfer
 python3 scripts/capability.py doctor
 python3 scripts/capability.py install --dest ~/.agents/skills
 ```
 
-Keep the complete `skills/transfer` folder together. Installation copies only that method, references, and license; it starts no service and installs no runtime. Use a different skills-parent path for your host.
+The installer copies `skills/transfer` as a complete folder into your chosen skills parent. Use the discovery path supported by your agent. It starts no service and configures no provider. Restart or refresh skill discovery in your host, then ask:
 
-## Choose the mode
+```text
+Use Transfer to compare pause/resume behavior in this fictional donor with two host clients. Keep donor source read-only. Identify current host overlap and shared runtime prerequisites, then propose one donor-derived acceptance probe per slice.
+```
 
-- **Gap check** — A donor seems useful but host overlap is unclear. Observed donor contract and an explicit keep/drop rationale per host.
-- **Re-express** — A missing capability and host seam are known. A native host slice with tests, real-surface probe, and CI parity.
-- **Verify** — The builder reports a transfer complete. A donor-derived check, bounded reopen, and retained evidence or blocker.
+If your agent does not discover installed skills, point it directly at the complete folder and ask it to read `SKILL.md`. Reading the method needs no Python runtime. [Installation details](docs/INSTALL.md) cover conflict handling and optional native execution.
 
-## What was consolidated
+## How the work proceeds
+
+1. **Compare donor and host.** Observe the behavior, inspect both architectures and record the genuine gap.
+2. **Build through the host’s seams.** Land shared backend prerequisites first, then one bounded client slice with normal CI and a real-surface probe.
+3. **Verify the transferred behavior.** Derive checks from the donor, preserve gaps and hand over evidence and rollback.
+
+## Example output
+
+Fictional worked example. It illustrates the intended output; it is not a measured result or a real customer story.
+
+```text
+Fictional transfer: pause a job
+Donor contract: running → paused → resumed
+Runtime prerequisite: explicit pause/resume operation
+Client A: wire existing control
+Client B: add control through native UI seam
+Verification: observe state transitions in each host
+State: gap checked; implementation not yet verified
+```
+
+## What is checked
+
+Retained graph syntax and ledger regression fixtures pass, and the portable install is checked. A ledger state is not donor-host equivalence; a real transfer still needs its source-derived and actual-surface evidence. See [validation](docs/VALIDATION.md) for the exact checks and limits.
+
+## Retained implementation and references
 
 [Migration map](docs/MIGRATION.md) records the original source paths and current roles. Primary Git history, native engines, tests, examples, and evaluation assets remain in this checkout. [Native guide](docs/NATIVE-README.md) preserves the original project documentation; old install URLs and runtime claims there are historical and need current verification. [Validation](docs/VALIDATION.md) records actual checks and limits.
 
-## Build the local site
+## Build the site
 
 ```sh
 python3 scripts/capability.py build
 python3 scripts/capability.py check
 ```
 
-Open `_site/index.html` or serve `_site` with a local static server. The downloadable ZIP is built from canonical method bytes. The fictional before/after example illustrates intended judgment; it is not a measured improvement. Nothing has been published or renamed remotely.
+The static site includes a ZIP built from the canonical method, references and license. Runtime and provider setup remain separate from installing the portable method.

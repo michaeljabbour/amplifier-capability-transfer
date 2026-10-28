@@ -95,6 +95,58 @@
     "docs/NATIVE-README.md",
     "docs/evaluations/2026-10-28/consolidation.json"
   ],
-  "evidence_summary": "This local candidate preserves the original source and evaluation assets. Packaging and native software checks are recorded separately from comparative usefulness. No outside-user outcome or renamed-method effectiveness claim is established.",
-  "publication_status": "Installation and evidence scopes are documented below."
+  "evidence_summary": "Retained graph syntax and ledger regression fixtures pass, and the portable install is checked. A ledger state is not donor-host equivalence; a real transfer still needs its source-derived and actual-surface evidence.",
+  "publication_status": "Installation and evidence scopes are documented below.",
+  "marketing": {
+    "headline": "Bring the behavior to the app you use.",
+    "lead": "A skill for moving a bounded capability between applications. Understand the donor, check what the host already does and rebuild the missing behavior through the host’s own architecture.",
+    "benefits": [
+      {
+        "title": "Transfer the useful part",
+        "body": "Describe the behavior and failure paths, then drop features the host already has or does not need."
+      },
+      {
+        "title": "Keep the host coherent",
+        "body": "Re-express the capability through native interfaces instead of grafting donor source into a different system."
+      },
+      {
+        "title": "Verify against the donor",
+        "body": "Use donor-derived acceptance checks and actual host surfaces to challenge the builder’s completion claim."
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "Compare donor and host",
+        "detail": "Observe the behavior, inspect both architectures and record the genuine gap."
+      },
+      {
+        "title": "Build through the host’s seams",
+        "detail": "Land shared backend prerequisites first, then one bounded client slice with normal CI and a real-surface probe."
+      },
+      {
+        "title": "Verify the transferred behavior",
+        "detail": "Derive checks from the donor, preserve gaps and hand over evidence and rollback."
+      }
+    ],
+    "use_when": [
+      "A feature in another app would be useful in yours.",
+      "The same capability must reach several different clients.",
+      "A UI feature depends on a missing shared protocol operation."
+    ],
+    "not_for": [
+      "Copying or vendoring donor implementation as a shortcut.",
+      "Rebuilding an entire application; use Migrate for that scope."
+    ],
+    "quickstart_prompt": "Use Transfer to compare pause/resume behavior in this fictional donor with two host clients. Keep donor source read-only. Identify current host overlap and shared runtime prerequisites, then propose one donor-derived acceptance probe per slice.",
+    "output_preview": "Fictional transfer: pause a job\nDonor contract: running → paused → resumed\nRuntime prerequisite: explicit pause/resume operation\nClient A: wire existing control\nClient B: add control through native UI seam\nVerification: observe state transitions in each host\nState: gap checked; implementation not yet verified",
+    "proof_summary": "Retained graph syntax and ledger regression fixtures pass, and the portable install is checked. A ledger state is not donor-host equivalence; a real transfer still needs its source-derived and actual-surface evidence.",
+    "next_step": "Bring one donor capability and the host where you want it to work.",
+    "example_note": "Fictional worked example. It illustrates the intended output; it is not a measured result or a real customer story.",
+    "install_notes": [
+      "Requires Git and Python 3.11+ for the repository installer. The portable method itself can be read by a compatible agent without a service or provider account.",
+      "The destination is a skills-parent folder. Use the discovery path supported by your agent; ~/.agents/skills is an example, not a universal host setting.",
+      "Keep the complete installed folder, references and license together. Identical reinstall is safe; conflicts are refused. A deliberate --replace keeps a dated backup."
+    ]
+  },
+  "repository_url": "https://github.com/michaeljabbour/amplifier-skill-transfer"
 }

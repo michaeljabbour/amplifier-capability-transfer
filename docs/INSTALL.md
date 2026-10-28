@@ -1,4 +1,25 @@
-# Install and optional execution
+# Install Transfer
+
+## Portable method
+
+Requires Git and Python 3.11+. From a terminal:
+
+```sh
+git clone https://github.com/michaeljabbour/amplifier-skill-transfer.git
+cd amplifier-skill-transfer
+python3 scripts/capability.py doctor
+python3 scripts/capability.py install --dest ~/.agents/skills
+```
+
+The destination is the parent of the `transfer` folder. Select your host’s supported skills location. Refresh skill discovery, or point your agent at the complete installed folder and ask it to read `SKILL.md`.
+
+Try this first:
+
+```text
+Use Transfer to compare pause/resume behavior in this fictional donor with two host clients. Keep donor source read-only. Identify current host overlap and shared runtime prerequisites, then propose one donor-derived acceptance probe per slice.
+```
+
+## Install behavior and optional execution
 
 Run `python3 scripts/capability.py doctor`, then `python3 scripts/capability.py install --dest <your-host-skills-parent>`. The destination must be the parent of the installed `transfer` folder. The command refuses conflicting content; inspect it before choosing `--replace`, which retains a dated backup. Repeating an identical install is idempotent. Remove only that installed folder to uninstall; no global service is installed.
 
