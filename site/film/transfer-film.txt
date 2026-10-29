@@ -1,0 +1,10 @@
+Meet Tilly. She’s your long job, and she can’t stop.
+Next door, another app can pause its jobs. You want that.
+So you copy its button into both your apps.
+Tilly presses it. Nothing. Underneath, there is no pause to call.
+Transfer watches what the button does. Running, paused, resumed. The donor code stays put.
+It checks what your apps already have. The real gap is underneath.
+So the shared pause lands first. Then each app adds it in its own style.
+The test comes from the donor, and runs in each real app. Until then, it says not verified.
+On screen: Move the behavior, not the code.
+Transfer. Bring the behavior to the app you use.

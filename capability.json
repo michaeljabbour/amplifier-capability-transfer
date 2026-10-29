@@ -148,5 +148,12 @@
       "Keep the complete installed folder, references and license together. Identical reinstall is safe; conflicts are refused. A deliberate --replace keeps a dated backup."
     ]
   },
-  "repository_url": "https://github.com/michaeljabbour/amplifier-skill-transfer"
+  "repository_url": "https://github.com/michaeljabbour/amplifier-skill-transfer",
+  "film": {
+    "file": "transfer-film",
+    "seconds": 70,
+    "heading": "Two buttons. Zero pauses.",
+    "blurb": "In 70 seconds, Tilly the long job cannot stop, and copying another app's pause button changes nothing, because there is no pause underneath. Transfer watches what the button does, checks what your apps already have, builds the shared pause first, then lets each app add it in its own style. Until the donor's test runs in each real app, the card says not verified. Captions are on the player; a transcript is below.",
+    "note": "The apps, the job and the run are a fictional example. The film shows how the skill behaves; it does not report results."
+  }
 }

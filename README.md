@@ -2,6 +2,8 @@
 
 Bring the behavior to the app you use.
 
+Watch the [70-second film](https://michaeljabbour.github.io/amplifier-skill-transfer/#film): a copied pause button that does nothing, and how the skill moves the behavior instead of the code. The example in it is fictional.
+
 A skill for moving a bounded capability between applications. Understand the donor, check what the host already does and rebuild the missing behavior through the host’s own architecture.
 
 [Explore the site](https://michaeljabbour.github.io/amplifier-skill-transfer/) · [Read the method](skills/transfer/SKILL.md) · [Install guide](docs/INSTALL.md)
