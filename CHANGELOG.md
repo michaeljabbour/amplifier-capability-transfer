@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-30 — Guard pipeline failures
+
+- Validate repository roots and parse run state as data before Git mutations. Stop on stash, checkout or pull failure, preserve existing run branches and route `blocked` explicitly instead of emitting `ready`. Validate both Transfer hosts before changing either.
+- Refuse wrong-branch commits, advance ledgers only after successful publishing/handoff, and stop retries/gates on invalid state or failed setup. Explicit routing tokens avoid stale tool output; unit/forge gates keep their pass/fail contract.
+
+## 2026-10-30 — Available film formats
+
+- Offer only film formats present in the repository. Preserve producer assets and support WebM-only playback/downloads without broken MP4 links; cover WebM-only, MP4-only, both and missing-media cases.
+
 ## 2026-10-28 — Film
 
 - Add a 70-second film to the site, with captions, a transcript, a poster and a 15-second cut. The example in it is fictional, and it reports no results.

@@ -99,7 +99,7 @@
   "publication_status": "Installation and evidence scopes are documented below.",
   "marketing": {
     "headline": "Bring the behavior to the app you use.",
-    "lead": "A skill for moving a bounded capability between applications. Understand the donor, check what the host already does and rebuild the missing behavior through the host’s own architecture.",
+    "lead": "A skill for moving a bounded capability between applications. Understand the donor, check what the host already does and rebuild the missing behavior through the host\u2019s own architecture.",
     "benefits": [
       {
         "title": "Transfer the useful part",
@@ -111,7 +111,7 @@
       },
       {
         "title": "Verify against the donor",
-        "body": "Use donor-derived acceptance checks and actual host surfaces to challenge the builder’s completion claim."
+        "body": "Use donor-derived acceptance checks and actual host surfaces to challenge the builder\u2019s completion claim."
       }
     ],
     "walkthrough": [
@@ -120,7 +120,7 @@
         "detail": "Observe the behavior, inspect both architectures and record the genuine gap."
       },
       {
-        "title": "Build through the host’s seams",
+        "title": "Build through the host\u2019s seams",
         "detail": "Land shared backend prerequisites first, then one bounded client slice with normal CI and a real-surface probe."
       },
       {
@@ -138,7 +138,7 @@
       "Rebuilding an entire application; use Migrate for that scope."
     ],
     "quickstart_prompt": "Use Transfer to compare pause/resume behavior in this fictional donor with two host clients. Keep donor source read-only. Identify current host overlap and shared runtime prerequisites, then propose one donor-derived acceptance probe per slice.",
-    "output_preview": "Fictional transfer: pause a job\nDonor contract: running → paused → resumed\nRuntime prerequisite: explicit pause/resume operation\nClient A: wire existing control\nClient B: add control through native UI seam\nVerification: observe state transitions in each host\nState: gap checked; implementation not yet verified",
+    "output_preview": "Fictional transfer: pause a job\nDonor contract: running \u2192 paused \u2192 resumed\nRuntime prerequisite: explicit pause/resume operation\nClient A: wire existing control\nClient B: add control through native UI seam\nVerification: observe state transitions in each host\nState: gap checked; implementation not yet verified",
     "proof_summary": "Retained graph syntax and ledger regression fixtures pass, and the portable install is checked. A ledger state is not donor-host equivalence; a real transfer still needs its source-derived and actual-surface evidence.",
     "next_step": "Bring one donor capability and the host where you want it to work.",
     "example_note": "Fictional worked example. It illustrates the intended output; it is not a measured result or a real customer story.",
@@ -148,12 +148,95 @@
       "Keep the complete installed folder, references and license together. Identical reinstall is safe; conflicts are refused. A deliberate --replace keeps a dated backup."
     ]
   },
-  "repository_url": "https://github.com/michaeljabbour/amplifier-skill-transfer",
+  "repository_url": "https://github.com/michaeljabbour/amplifier-capability-transfer",
+  "name": "amplifier-capability-transfer",
+  "legacy_names": [
+    "amplifier-skill-transfer",
+    "transfer"
+  ],
+  "contract_version": "amplifier-capability/v1",
+  "version": null,
+  "version_basis": "No release version recorded; installer requires a full Git revision pin.",
+  "engine": "LLM",
+  "engine_components": {
+    "caller_method": "LLM"
+  },
+  "surfaces": [
+    "agent-skills",
+    "amplifier-bundle"
+  ],
+  "portable_method": {
+    "name": "transfer",
+    "path": "skills/transfer",
+    "include": [
+      "."
+    ],
+    "contract": "Agent Skills directory; caller applies the method; no independent execution loop is installed."
+  },
+  "interfaces": {
+    "portable": {
+      "input": "Caller task and explicitly authorized context",
+      "output": "Bring a proven capability to the host you use.",
+      "failure": "Report insufficient evidence, unsupported context or host limitation; never turn discovery into an execution claim."
+    },
+    "native": {
+      "distribution": null,
+      "entrypoints": {},
+      "docs": [
+        "docs/INSTALL.md",
+        "docs/MIGRATION.md",
+        "docs/VALIDATION.md",
+        "docs/NATIVE-README.md",
+        "docs/evaluations/2026-10-28/consolidation.json"
+      ],
+      "status": "Existing declared entrypoints preserved; runtime signatures, service access and installation tests remain separate evidence."
+    },
+    "host_adapters": {
+      "amplifier_bundle": "bundle.md",
+      "grants_autonomy": false
+    }
+  },
+  "permissions": {
+    "installation": {
+      "network": false,
+      "executes_capability_code": false,
+      "writes": [
+        "Selected discovery folders",
+        ".capability-state transaction backups"
+      ],
+      "grants_runtime_permissions": false
+    },
+    "runtime": {
+      "status": "Host/caller authorizes each operation; installation is not a tool allowlist or standing approval.",
+      "declared_boundaries": [
+        "The donor is read-only; transfer observable behavior by re-expression, not source grafting.",
+        "Existing host conventions and authority boundaries win over donor implementation choices.",
+        "Optional HGT graphs, ledgers, Forge, and Amplifier are execution aids; declared fitness is not benefit evidence."
+      ]
+    },
+    "secret_names": {
+      "discovery_requires": [],
+      "native_runtime_inventory": "See native documentation; no credentials are bundled or inferred."
+    }
+  },
+  "dataflow": {
+    "installation": "Read pinned tracked portable source and copy locally with SHA-256 receipts. No source text is transmitted.",
+    "method": "Caller supplies authorized context; existing promise and boundaries govern output.",
+    "native_runtime": "Provider/network/storage flows are owned by native interfaces and host authorization; these files do not enable them."
+  },
+  "source_policy": {
+    "revision": "Explicit full40-character Git commit required at installation; never infer latest.",
+    "repository_rename": "Public identity may change; skill folder, imports, entrypoints, tool IDs and schemas remain stable.",
+    "research": ".research/market remains local and ignored; AGENTS governs refresh."
+  },
   "film": {
     "file": "transfer-film",
     "seconds": 70,
     "heading": "Two buttons. Zero pauses.",
     "blurb": "In 70 seconds, Tilly the long job cannot stop, and copying another app's pause button changes nothing, because there is no pause underneath. Transfer watches what the button does, checks what your apps already have, builds the shared pause first, then lets each app add it in its own style. Until the donor's test runs in each real app, the card says not verified. Captions are on the player; a transcript is below.",
     "note": "The apps, the job and the run are a fictional example. The film shows how the skill behaves; it does not report results."
-  }
+  },
+  "repository_aliases": [
+    "https://github.com/michaeljabbour/amplifier-skill-transfer"
+  ]
 }
