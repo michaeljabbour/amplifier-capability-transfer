@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — optional coaching checkpoint
+
+- Add a self-contained opt-in practice/review guide with a fictional task, preserved baseline, explicit scope/budget, user stop, reviewed keep/revert and private-by-choice records. Keep native operations, existing method budgets and evidence rules unchanged; no human efficacy or outside-use result is claimed.
+
 ## 2026-10-30 — Guard pipeline failures
 
 - Validate repository roots and parse run state as data before Git mutations. Stop on stash, checkout or pull failure, preserve existing run branches and route `blocked` explicitly instead of emitting `ready`. Validate both Transfer hosts before changing either.

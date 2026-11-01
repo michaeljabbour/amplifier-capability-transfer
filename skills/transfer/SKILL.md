@@ -33,3 +33,7 @@ A verifier derives checks from the donor knowing only the capability ID/scope; h
 ## Return
 
 Give the donor contract, per-host gap and seam decisions, changed interfaces, exact unit/real-surface/CI results, independent verification evidence, blockers, and rollback. Do not call a transfer proven merely because the queue has no new rows.
+
+## Optional coaching checkpoint
+
+Read [the local coaching guide](references/coaching-session.v1.md) only when the person asks for practice or optional session bookkeeping. Keep direct artifact production available; agree a small budget, preserve the baseline and stop on goal, user exit or no meaningful gain.
