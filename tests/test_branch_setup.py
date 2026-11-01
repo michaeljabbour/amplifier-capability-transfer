@@ -26,7 +26,11 @@ class BranchSetupTests(unittest.TestCase):
         wrapper.write_text('#!' + shutil.which('python3') + '\n' + '''import json,os,sys,subprocess
 args=sys.argv[1:]
 with open(os.environ['GIT_TEST_LOG'],'a') as f:f.write(json.dumps({'cwd':os.getcwd(),'args':args})+'\\n')
-local=args[2:] if len(args)>2 and args[0]=='-C' else args
+local=list(args)
+while local:
+ if local[0] in {'-C','-c'}: local=local[2:]
+ elif local[0]=='--literal-pathspecs': local=local[1:]
+ else: break
 op='checkout-main' if local[:3]==['checkout','-q','main'] else ('checkout-branch' if local[:3]==['checkout','-q','-b'] else (local[0] if local else ''))
 if op==os.environ.get('FAIL_GIT'):sys.exit(17)
 if op in {'pull','push'}:sys.exit(0)
@@ -40,6 +44,14 @@ sys.exit(subprocess.call([os.environ['REAL_GIT'],*args]))
         self.state.write_text('STORY=story-1\n' if MIGRATE else 'SLUG=feature-1\nTARGET=a\n')
         raw = re.search(r'BranchSetup \[shape=parallelogram,\s*tool_command=("(?:\\.|[^"\\])*")',GRAPH.read_text()).group(1)
         self.command = json.loads(raw)
+        if not MIGRATE:
+            donor=self.repo('fixture donor')
+            pipelines=self.a/'pipelines';pipelines.mkdir(exist_ok=True)
+            shutil.copyfile(ROOT/'pipelines/ledger.py',pipelines/'ledger.py')
+            (pipelines/'fixture-ledger.tsv').write_text('feature-1\ta\tnew\n')
+            forge=self.base/'fixture-forge.py';forge.write_text('pass\n')
+            self.env.update({'DONOR_PATH':str(donor),'FORGE_TOOL':str(forge),'HOST_A_KIND':'new:fixture','HOST_B_KIND':'new:fixture','LEDGER_FILE':'pipelines/fixture-ledger.tsv'})
+            self.git(self.a,'add','pipelines');self.git(self.a,'commit','-qm','fictional pipeline inputs')
 
     def git(self,path,*args):
         return subprocess.check_output([REAL_GIT,'-c','core.fsmonitor=false','-C',str(path),*args],text=True).strip()
@@ -54,7 +66,15 @@ sys.exit(subprocess.call([os.environ['REAL_GIT'],*args]))
 
     def mutations(self):
         records=[json.loads(x) for x in self.log.read_text().splitlines()] if self.log.exists() else []
-        return [x for x in records if x['args'][0] in {'stash','checkout','pull','reset'}]
+        output=[]
+        for record in records:
+            args=list(record['args'])
+            while args:
+                if args[0] in {'-C','-c'}:args=args[2:]
+                elif args[0]=='--literal-pathspecs':args=args[1:]
+                else:break
+            if args and args[0] in {'stash','checkout','pull','reset'}:output.append({**record,'raw_args':record['args'],'args':args})
+        return output
 
     def blocked(self):
         result=self.run_setup()
@@ -111,12 +131,12 @@ sys.exit(subprocess.call([os.environ['REAL_GIT'],*args]))
 
     @unittest.skipIf(MIGRATE,'transfer-only second host')
     def test_missing_second_host_refuses_before_primary_mutation(self):
-        self.state.write_text('SLUG=feature-1\nTARGET=ab\n');self.env['HOST_B_PATH']=str(self.base/'missing')
+        self.state.write_text('SLUG=feature-1\nTARGET=ab\n');(self.a/'pipelines/fixture-ledger.tsv').write_text('feature-1\tab\tnew\n');self.env['HOST_B_PATH']=str(self.base/'missing')
         self.blocked();self.assertEqual(self.mutations(),[])
 
     @unittest.skipIf(MIGRATE,'transfer-only second host')
     def test_two_host_success(self):
-        self.state.write_text('SLUG=feature-1\nTARGET=ab\n')
+        self.state.write_text('SLUG=feature-1\nTARGET=ab\n');(self.a/'pipelines/fixture-ledger.tsv').write_text('feature-1\tab\tnew\n')
         result=self.run_setup();self.assertEqual(result.stdout,'ready',result.stderr)
         self.assertEqual(self.git(self.b,'branch','--show-current'),'hgt/feature-1')
 
@@ -127,7 +147,7 @@ sys.exit(subprocess.call([os.environ['REAL_GIT'],*args]))
     def test_all_guarded_nodes_refuse_wrong_cwd(self):
         self.env['TARGET_PATH' if MIGRATE else 'HOST_A_PATH']=str(self.base/'missing')
         check='CheckBacklog' if MIGRATE else 'CheckLedger'
-        for node,token in [(check,'blocked'),('UnitValidate','fail'),('ForgeValidate','fail'),('RetryGate','blocked'),('Commit','blocked'),('MarkBlocked','blocked')]:
+        for node,token in [(check,'blocked'),('UnitValidate','blocked'),('ForgeValidate','blocked'),('RetryGate','blocked'),('Commit','blocked'),('MarkBlocked','blocked')]:
             with self.subTest(node=node):
                 result=subprocess.run(['bash','-c',self.node_command(node)],cwd=self.base,env=self.env,text=True,capture_output=True)
                 self.assertEqual(result.returncode,0,result.stderr);self.assertEqual(result.stdout,token)
@@ -135,9 +155,10 @@ sys.exit(subprocess.call([os.environ['REAL_GIT'],*args]))
 
     def test_ledger_error_is_not_reported_as_work_available(self):
         ledger=self.base/'ledger.py';ledger.write_text('raise SystemExit(19)\n')
-        self.env.update({'SOURCE_PATH':'fictional','TARGET_KIND':'new:test','FORGE_TOOL':'fictional','BACKLOG':'fictional','LEDGER_TOOL':str(ledger),'DONOR_PATH':'fictional','HOST_A_KIND':'new:test','LEDGER_FILE':'fictional'})
+        self.env.update({'SOURCE_PATH':'fictional','TARGET_KIND':'new:test','BACKLOG':'fictional','LEDGER_TOOL':str(ledger)})
+        if MIGRATE:self.env.update({'FORGE_TOOL':'fictional','LEDGER_FILE':'fictional'})
         if not MIGRATE:
-            (self.a/'pipelines').mkdir();(self.a/'pipelines/ledger.py').write_text(ledger.read_text())
+            (self.a/'pipelines').mkdir(exist_ok=True);(self.a/'pipelines/ledger.py').write_text(ledger.read_text())
         result=subprocess.run(['bash','-c',self.node_command('CheckBacklog' if MIGRATE else 'CheckLedger')],cwd=self.base,env=self.env,text=True,capture_output=True)
         self.assertEqual(result.stdout,'blocked');self.assertEqual(self.mutations(),[])
 
@@ -151,7 +172,7 @@ sys.exit(subprocess.call([os.environ['REAL_GIT'],*args]))
         ledger=self.base/'ledger.py';ledger.write_text('from pathlib import Path\nPath('+repr(str(marker))+').write_text("called")\n')
         self.env.update({'LEDGER_TOOL':str(ledger),'BACKLOG':'fictional','FAIL_GIT':'push'})
         if not MIGRATE:
-            (self.a/'pipelines').mkdir();(self.a/'pipelines/ledger.py').write_text(ledger.read_text())
+            (self.a/'pipelines').mkdir(exist_ok=True);(self.a/'pipelines/ledger.py').write_text(ledger.read_text())
         (self.a/'f').write_text('new feature')
         result=subprocess.run(['bash','-c',self.node_command('Commit')],cwd=self.base,env=self.env,text=True,capture_output=True)
         self.assertEqual(result.stdout,'blocked',result.stderr);self.assertFalse(marker.exists())
@@ -166,7 +187,7 @@ sys.exit(subprocess.call([os.environ['REAL_GIT'],*args]))
         ledger.write_text('from pathlib import Path\nPath('+repr(str(marker))+').write_text("called")\n')
         self.env.update({'LEDGER_TOOL':str(ledger),'BACKLOG':'fictional'})
         if not MIGRATE:
-            (self.a/'pipelines').mkdir();(self.a/'pipelines/ledger.py').write_text(ledger.read_text())
+            (self.a/'pipelines').mkdir(exist_ok=True);(self.a/'pipelines/ledger.py').write_text(ledger.read_text())
         gh=self.base/'bin/gh';gh.write_text('#!/bin/sh\nexit 0\n');gh.chmod(0o755)
         (self.a/'f').write_text('feature')
         result=subprocess.run(['bash','-c',self.node_command('Commit')],cwd=self.base,env=self.env,text=True,capture_output=True)

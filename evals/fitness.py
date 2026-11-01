@@ -23,20 +23,40 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+STATES = frozenset({"new", "implemented", "verified", "acknowledged"})
+
+
+def validate_rows(rows: list[tuple[str, str, str]]) -> None:
+    """Reject ambiguous snapshots instead of awarding partial/incorrect scores."""
+    seen: set[str] = set()
+    for number, row in enumerate(rows, 1):
+        if not isinstance(row, (tuple, list)) or len(row) != 3:
+            raise ValueError(f"row {number}: expected exactly three fields")
+        key, target, state = row
+        if not all(isinstance(value, str) and value.strip() for value in row):
+            raise ValueError(f"row {number}: key, target and state must be nonempty strings")
+        if state not in STATES:
+            raise ValueError(f"row {number}: invalid state {state!r}")
+        if key in seen:
+            raise ValueError(f"row {number}: duplicate key {key!r}")
+        seen.add(key)
+
 
 def read_rows(path: str) -> list[tuple[str, str, str]]:
     rows: list[tuple[str, str, str]] = []
-    for line in Path(path).read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
+    for number, line in enumerate(Path(path).read_text().splitlines(), 1):
+        if not line.strip() or line.lstrip().startswith("#"):
             continue
-        parts = line.split("\t")
-        if len(parts) >= 3:
-            rows.append((parts[0], parts[1], parts[2]))
+        parts = [part.strip() for part in line.split("\t")]
+        if len(parts) != 3:
+            raise ValueError(f"{path}:{number}: expected exactly three TSV fields")
+        rows.append((parts[0], parts[1], parts[2]))
+    validate_rows(rows)
     return rows
 
 
 def fitness(rows: list[tuple[str, str, str]]) -> dict:
+    validate_rows(rows)
     total = len(rows)
     denom = total or 1
     impl = sum(1 for r in rows if r[2] == "implemented")
@@ -61,7 +81,12 @@ def main(argv: list[str]) -> int:
     if len(argv) != 2:
         print("usage: fitness.py <ledger.tsv>", file=sys.stderr)
         return 2
-    for k, v in fitness(read_rows(argv[1])).items():
+    try:
+        result = fitness(read_rows(argv[1]))
+    except (OSError, ValueError) as exc:
+        print(f"invalid ledger: {exc}", file=sys.stderr)
+        return 2
+    for k, v in result.items():
         print(f"{k}\t{v}")
     return 0
 

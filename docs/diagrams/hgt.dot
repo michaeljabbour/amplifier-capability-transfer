@@ -20,6 +20,8 @@ digraph hgt_doc {
   RetryGate -> exit [label="blocked"];
   Commit -> exit [label="blocked"];
   MarkBlocked -> exit [label="blocked"];
+  UnitValidate -> exit [label="blocked"];
+  ForgeValidate -> exit [label="blocked"];
   start -> CheckLedger;
   CheckLedger -> exit [label="done"];
   CheckLedger -> SelectCapability [label="process"];

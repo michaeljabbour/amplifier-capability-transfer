@@ -27,7 +27,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from fitness import fitness, read_rows
+from fitness import fitness, read_rows, validate_rows
 
 HERE = Path(__file__).parent
 FIXTURE = sorted((HERE / "fixtures" / "run").glob("*.tsv"))
@@ -41,10 +41,17 @@ def _bar(frac: float, width: int = 24) -> str:
 
 def check(series: list[list[tuple[str, str, str]]], verifier: bool = False) -> tuple[bool, list[str]]:
     notes: list[str] = []
+    if not series:
+        return False, ["invalid run: no snapshots supplied"]
     ok = True
     prev_f = None
     prev_state: dict[str, str] = {}
+    prev_target: dict[str, str] = {}
     for i, rows in enumerate(series):
+        try:
+            validate_rows(rows)
+        except ValueError as exc:
+            return False, notes + [f"    ✗ invalid snapshot {i}: {exc}"]
         f = fitness(rows)
         notes.append(
             f"  step {i}: {_bar(f['verified_frac'] if verifier else f['landed_frac'])} "
@@ -52,6 +59,14 @@ def check(series: list[list[tuple[str, str, str]]], verifier: bool = False) -> t
             f"landed={f['landed_frac']:.2f} verified={f['verified_frac']:.2f}"
         )
         state = {r[0]: r[2] for r in rows}
+        target = {r[0]: r[1] for r in rows}
+        for key in sorted(prev_state.keys() - state.keys()):
+            ok = False
+            notes.append(f"    ✗ REGRESSION: row {key!r} disappeared from queue")
+        for key in sorted(prev_target.keys() & target.keys()):
+            if prev_target[key] != target[key]:
+                ok = False
+                notes.append(f"    ✗ REGRESSION: row {key!r} changed target")
         if prev_f is not None:
             if verifier:
                 if f["verified_frac"] < prev_f["verified_frac"] - 1e-9:
@@ -71,7 +86,7 @@ def check(series: list[list[tuple[str, str, str]]], verifier: bool = False) -> t
                 notes.append(f"    ✗ REGRESSION: '{slug}' un-completed ({st} -> {now})")
             elif verifier and st == "implemented" and now == "new":
                 notes.append(f"    ↺ reopened by verifier: '{slug}' (implemented -> new)")
-        prev_f, prev_state = f, state
+        prev_f, prev_state, prev_target = f, state, target
     return ok, notes
 
 
@@ -128,7 +143,11 @@ def main(argv: list[str]) -> int:
         print("no fixtures found", file=sys.stderr)
         return 2
     print(f"HGT hill-climb ({'verifier' if verifier else 'builder'} mode) over {len(paths)} snapshot(s):")
-    ok, notes = check([read_rows(p) for p in paths], verifier)
+    try:
+        ok, notes = check([read_rows(p) for p in paths], verifier)
+    except (OSError, ValueError) as exc:
+        print(f"invalid ledger: {exc}", file=sys.stderr)
+        return 2
     print("\n".join(notes))
     print("VERDICT:", "CLIMBING ✓" if ok else "REGRESSION ✗")
     return 0 if ok else 1

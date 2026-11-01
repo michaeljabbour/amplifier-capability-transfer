@@ -25,6 +25,7 @@ branch) live there, not here.
 ## Verification gradient (before a PR)
 - **Structural:** `graphviz` parses `pipelines/hgt.dot`; `python3 pipelines/ledger.py stats` runs.
 - **Eval:** `python3 evals/hillclimb.py --self-test && python3 evals/hillclimb.py --fixture` (the hill-climbing eval and its regression detector both pass).
+- **Installed parser:** after graph edits, run `/path/to/amplifier/python -m unittest discover -s runtime_tests -v` in an existing Amplifier environment. These tests require the actual loop-pipeline parser; Graphviz and JSON extraction alone do not establish command compatibility.
 - **Conformance:** `/audit-bundle` (conformance auditor) + the `validate-bundle-repo` recipe.
 - **Live run** (required when touching the graph/orchestration): drive HGT against a
   scratch source+host and confirm one capability transfers green end-to-end.

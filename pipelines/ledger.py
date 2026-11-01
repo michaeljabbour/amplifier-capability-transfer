@@ -11,7 +11,7 @@ state ∈ {new, implemented, verified, acknowledged}
   verified     — blind verifier (Loop 1) independently confirmed the behavior
   acknowledged — could not converge (or failed verification twice); human handoff
 
-Commands (stdlib only, never raises for the pipeline's tool nodes):
+Commands (stdlib only; invalid input exits nonzero for the pipeline's guards):
   earliest              print "<key> <label>" of the first `new` row, or NONE
   earliest-implemented  print "<key> <label>" of the first `implemented` row, or NONE
                         (the blind verifier's queue — Loop 1)
@@ -39,17 +39,29 @@ LEDGER = Path(_LEDGER_ENV) if _LEDGER_ENV else Path(__file__).with_name("ledger.
 ORDER = {"new": 0, "implemented": 1, "verified": 2, "acknowledged": 3}
 
 
+def _field(value: str) -> bool:
+    # Queue selection prints exactly two whitespace-separated tokens. Python's
+    # splitlines also recognizes Unicode separators beyond CR/LF.
+    return bool(value) and not any(c.isspace() for c in value)
+
+
 def _rows() -> list[list[str]]:
     if not LEDGER.exists():
         return []
     out = []
-    for line in LEDGER.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
+    seen: set[str] = set()
+    for number, line in enumerate(LEDGER.read_text().splitlines(), 1):
+        if not line.strip() or line.lstrip().startswith("#"):
             continue
-        parts = line.split("\t")
-        if len(parts) == 3:
-            out.append(parts)
+        parts = [part.strip() for part in line.split("\t")]
+        if len(parts) != 3 or not all(_field(part) for part in parts):
+            raise ValueError(f"line {number}: expected three nonempty whitespace-free TSV fields")
+        if parts[2] not in ORDER:
+            raise ValueError(f"line {number}: invalid state {parts[2]!r}")
+        if parts[0] in seen:
+            raise ValueError(f"line {number}: duplicate key {parts[0]!r}")
+        seen.add(parts[0])
+        out.append(parts)
     return out
 
 
@@ -57,7 +69,7 @@ def _write(rows: list[list[str]]) -> None:
     LEDGER.write_text("".join("\t".join(r) + "\n" for r in rows))
 
 
-def main(argv: list[str]) -> int:
+def _main(argv: list[str]) -> int:
     cmd = argv[0] if argv else "stats"
     rows = _rows()
 
@@ -79,6 +91,13 @@ def main(argv: list[str]) -> int:
 
     if cmd == "update" and len(argv) == 3:
         issue, state = argv[1], argv[2]
+        if state not in ORDER:
+            raise ValueError(f"invalid state {state!r}")
+        match = next((r for r in rows if r[0] == issue), None)
+        if match is None:
+            raise ValueError(f"unknown key {issue!r}")
+        if match[2] == "verified" and state != "verified":
+            raise ValueError(f"{issue!r}: verified is terminal")
         for r in rows:
             if r[0] == issue:
                 r[2] = state
@@ -88,6 +107,11 @@ def main(argv: list[str]) -> int:
 
     if cmd == "add" and len(argv) == 3:
         issue, slug = argv[1], argv[2]
+        if not _field(issue) or issue.startswith("#") or not _field(slug):
+            raise ValueError("key and target must be nonempty whitespace-free fields; keys cannot start with '#'")
+        existing = next((r for r in rows if r[0] == issue), None)
+        if existing is not None and existing[1] != slug:
+            raise ValueError(f"{issue!r}: existing key has a different target")
         if not any(r[0] == issue for r in rows):
             rows.append([issue, slug, "new"])
             _write(rows)
@@ -115,6 +139,14 @@ def main(argv: list[str]) -> int:
 
     print(f"unknown command: {cmd}", file=sys.stderr)
     return 1
+
+
+def main(argv: list[str]) -> int:
+    try:
+        return _main(argv)
+    except (OSError, ValueError) as exc:
+        print(f"invalid ledger operation: {exc}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":

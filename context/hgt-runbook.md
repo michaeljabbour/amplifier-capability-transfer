@@ -67,9 +67,16 @@ opens only when its gates are green.
 params so they reach BOTH prompts and `tool_command` (the mounted-orchestrator path
 does NOT substitute params into `tool_command` — a real engine limitation):
 
+Load the graph from a pinned capability checkout. The primary host needs the
+unmodified `pipelines/ledger.py` helper from that revision and an existing valid
+ledger at the host-relative `LEDGER_FILE` path. These are control files, not
+application changes; the graph excludes them from stash and application staging.
+The native Git path helpers require `add` and `stash push` support for
+`--pathspec-from-file` with `--pathspec-file-nul`. Unsupported options stop the run.
+
 ```python
 from amplifier_module_pipeline_runner.runner import run_pipeline
-await run_pipeline(open("pipelines/hgt.dot").read(),
+await run_pipeline(open("<capability-checkout>/pipelines/hgt.dot").read(),
     params={"DONOR_PATH": "...", "HOST_A_PATH": "...", "HOST_A_KIND": "python",
             "HOST_B_PATH": "...", "HOST_B_KIND": "rust",
             "FORGE_TOOL": "~/.claude/skills/amplifier-skill-forge/tools/forge.py",
@@ -87,8 +94,17 @@ itself authored. Loop 1 (`hgt:pipelines/verify.dot` · the `hgt-verifier` agent)
 independently drives them to the terminal state **`verified`**: a verifier BLIND to
 every builder artifact derives its own checks from the ground truth (the donor app)
 and validates through a real terminal. Fail ⇒ findings in `.ai/verify_findings/`,
-row reopens ONCE (`implemented → new` — the build loop rebuilds with findings
-readable), then `acknowledged`. Verifier → builder info flow is allowed; builder →
-verifier is forbidden.
-Run order: build loop to quiescence → verify loop to quiescence → done when every
-row is `verified` or `acknowledged`. Monitor with `evals/hillclimb.py --verifier`.
+row may reopen ONCE (`implemented → new`), then `acknowledged`. Verifier → builder
+info flow is allowed; builder → verifier is forbidden.
+
+**A reopen does not automatically resume the builder.** `BranchSetup` deliberately
+refuses an existing `hgt/<slug>` branch, including the prior build's branch. Stop
+at this ownership/recovery gate. The owner must inspect exact branch heads, open
+PR state, dirty/index work and saved findings, then explicitly choose how to
+continue. Do not reset, delete, rename or take over the existing branch to bypass
+the gate. Keep the reopen reservation and findings. Automatic rebuild of a
+reopened row is a current native-flow limitation, not a verified feature.
+
+Run order is build loop → verify loop → owner-directed recovery if a row reopens.
+Only call the run complete when every row is `verified` or `acknowledged` with
+its required evidence. Monitor with `evals/hillclimb.py --verifier`.
