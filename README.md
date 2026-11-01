@@ -2,11 +2,11 @@
 
 Bring the behavior to the app you use.
 
-Watch the [70-second film](https://michaeljabbour.github.io/amplifier-skill-transfer/#film): a copied pause button that does nothing, and how the skill moves the behavior instead of the code. The example in it is fictional.
+Watch the [70-second film](https://michaeljabbour.github.io/amplifier-capability-transfer/#film): a copied pause button that does nothing, and how the skill moves the behavior instead of the code. The example in it is fictional.
 
 A skill for moving a bounded capability between applications. Understand the donor, check what the host already does and rebuild the missing behavior through the host’s own architecture.
 
-[Explore the site](https://michaeljabbour.github.io/amplifier-skill-transfer/) · [Read the method](skills/transfer/SKILL.md) · [Install guide](docs/INSTALL.md)
+[Explore the site](https://michaeljabbour.github.io/amplifier-capability-transfer/) · [Read the method](skills/transfer/SKILL.md) · [Install guide](docs/INSTALL.md)
 
 ## What you get
 
@@ -19,8 +19,8 @@ A skill for moving a bounded capability between applications. Understand the don
 Requires Git and Python 3.11+. Run these commands from a terminal:
 
 ```sh
-git clone https://github.com/michaeljabbour/amplifier-skill-transfer.git
-cd amplifier-skill-transfer
+git clone https://github.com/michaeljabbour/amplifier-capability-transfer.git
+cd amplifier-capability-transfer
 python3 scripts/capability.py doctor
 python3 scripts/capability.py install --dest ~/.agents/skills
 ```
